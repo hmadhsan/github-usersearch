@@ -1,26 +1,47 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import SearchBar from "./components/SearchBar";
+import UserCard from "./components/UserCard";
+import Header from "./components/Header";
+import "./App.css";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      user: {} //object..that will define in setstate
+    };
+  }
+
+  onApisearchSubmit = user => {
+    fetch(`https://api.github.com/users/${user}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        this.setState({
+          user: {
+            name: data.name,
+            location: data.location,
+            followers: data.followers,
+            username: data.login,
+            image: data.avatar_url
+          }
+        });
+      });
+  };
+
+  componentDidMount() {
+    this.onApisearchSubmit();
+  }
+  render() {
+    return (
+      <div>
+        <Header />
+        <SearchBar onsubmit={this.onApisearchSubmit} />
+        {/* onsubmit is a prop that is passing to SearchBar component */}
+        <UserCard userdata={this.state.user} />
+      </div>
+    );
+  }
 }
 
 export default App;
